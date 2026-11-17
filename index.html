@@ -224,6 +224,10 @@
       .toggle-row label:has(input:focus-visible){ outline:3px solid var(--accent); outline-offset:2px; }
       .subfields{ margin-top:18px; border-top:1px dashed var(--line); padding-top:18px; }
       .subfields[hidden]{ display:none; }
+      .is-dim{ opacity:.55; }
+      .is-dim label, .is-dim .flabel{ cursor:not-allowed; }
+      .chip:disabled{ cursor:not-allowed; }
+      .chip:disabled:hover{ border-color:var(--line); }
       select.sel, input.txt{
         width:100%; font:inherit; font-size:1.05rem; font-weight:600; color:var(--ink);
         background:var(--surface-2); border:2px solid var(--line); border-radius:12px; padding:12px 14px;
@@ -337,7 +341,7 @@
       details.faq summary{ cursor:pointer; font-weight:700; padding:16px 20px; font-size:1.05rem; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px; }
       details.faq summary::-webkit-details-marker{ display:none; }
       details.faq summary::after{ content:"+"; font-size:1.5rem; font-weight:400; color:var(--brand); flex:none; }
-      details.faq[open ] summary::after{ content:"–"; }
+      details.faq[open] summary::after{ content:"–"; }
       details.faq .a{ padding:0 20px 18px; color:var(--muted); }
       details.faq .a strong{ color:var(--ink); }
       footer{ border-top:1px solid var(--line); padding:36px 0 48px; background:var(--bg-soft); }
@@ -401,7 +405,7 @@
           <div class="sim-grid">
             <div class="card">
               <h3>Tus datos</h3>
-              <p class="hint">Solo necesitas tres datos. No te pedimos INE, CURP ni NSS.</p>
+              <p class="hint">Solo necesitas unos datos. No te pedimos INE, CURP ni NSS.</p>
 
               <div class="field">
                 <label class="flabel" for="pension">¿Cuánto recibes de pensión al mes?</label>
@@ -437,32 +441,60 @@
               </div>
 
               <div class="field">
-                <span class="flabel" id="actual-label">¿Ya tienes un crédito que te descuentan de tu pensión?</span>
-                <div class="toggle-row" role="radiogroup" aria-labelledby="actual-label">
-                  <label><input type="radio" name="tiene" value="no" checked /> No, sería mi primer crédito</label>
-                  <label><input type="radio" name="tiene" value="si" /> Sí, ya tengo uno</label>
+                <label class="flabel" for="edad">¿Cuál es tu edad?</label>
+                <input class="txt" id="edad" type="number" inputmode="numeric" min="50" max="100" step="1" value="67" />
+                <p class="hint" style="margin:8px 0 0;">Multiva pide que tu edad más el plazo no pase de 79 años 11 meses.</p>
+              </div>
+
+              <div class="field">
+                <span class="flabel" id="modo-label">¿Qué quieres hacer?</span>
+                <div class="toggle-row" role="radiogroup" aria-labelledby="modo-label">
+                  <label><input type="radio" name="modo" value="nuevo" checked /> Un crédito nuevo</label>
+                  <label><input type="radio" name="modo" value="compra" /> Comprar mi deuda actual</label>
                 </div>
-                <div class="subfields" id="subfields" hidden>
-                  <div class="field">
-                    <label class="flabel" for="banco-actual">¿Con quién lo tienes?</label>
-                    <select class="sel" id="banco-actual">
-                      <option value="DIMEX">DIMEX</option>
-                      <option value="Multiva">Multiva</option>
-                      <option value="Inbursa">Inbursa</option>
-                      <option value="Consubanco">Consubanco</option>
-                      <option value="Otro">Otra financiera</option>
-                    </select>
+              </div>
+
+              <div class="subfields" id="campos-compra" hidden>
+                <div class="field">
+                  <label class="flabel" for="deuda-monto">¿Cuánto pediste prestado?</label>
+                  <div class="money">
+                    <span class="sign">$</span>
+                    <input id="deuda-monto" type="number" inputmode="numeric" min="0" step="1000" value="80000" />
                   </div>
-                  <div class="field">
-                    <label class="flabel" for="pagos">¿Cuántos pagos (descuentos) llevas?</label>
-                    <input class="txt" id="pagos" type="number" inputmode="numeric" min="0" max="60" step="1" value="26" />
-                  </div>
-                  <div class="field">
-                    <label class="flabel" for="descuento-actual">¿Cuánto te descuentan al mes hoy?</label>
-                    <div class="money">
-                      <span class="sign">$</span>
-                      <input id="descuento-actual" type="number" inputmode="numeric" min="0" step="50" value="3200" />
-                    </div>
+                </div>
+                <div class="field">
+                  <label class="flabel" for="deuda-plazo">¿A cuántos meses originalmente?</label>
+                  <select class="sel" id="deuda-plazo">
+                    <option value="12">12 meses</option>
+                    <option value="18">18 meses</option>
+                    <option value="24">24 meses</option>
+                    <option value="30">30 meses</option>
+                    <option value="36" selected>36 meses</option>
+                    <option value="42">42 meses</option>
+                    <option value="48">48 meses</option>
+                    <option value="54">54 meses</option>
+                    <option value="60">60 meses</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="flabel" for="deuda-financiera">¿Con qué financiera lo tienes?</label>
+                  <select class="sel" id="deuda-financiera">
+                    <option value="DIMEX" selected>DIMEX</option>
+                    <option value="Multiva">Multiva</option>
+                    <option value="Inbursa">Inbursa</option>
+                    <option value="Consubanco">Consubanco</option>
+                    <option value="Otro">Otra financiera</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="flabel" for="deuda-pagos">¿Cuántos pagos llevas?</label>
+                  <input class="txt" id="deuda-pagos" type="number" inputmode="numeric" min="0" max="60" step="1" value="26" />
+                </div>
+                <div class="field">
+                  <label class="flabel" for="deuda-mensualidad">¿Cuánto te descuentan al mes hoy?</label>
+                  <div class="money">
+                    <span class="sign">$</span>
+                    <input id="deuda-mensualidad" type="number" inputmode="numeric" min="0" step="50" value="3200" />
                   </div>
                 </div>
               </div>
@@ -499,8 +531,8 @@
                 <div class="row"><dt>Mensualidad</dt><dd class="big" id="c-mul-mens">$0</dd></div>
                 <div class="row"><dt>Total a pagar</dt><dd id="c-mul-total">$0</dd></div>
                 <div class="row"><dt>Intereses</dt><dd id="c-mul-int">$0</dd></div>
-                <div class="row"><dt>Tasa anual de ejemplo</dt><dd>26.9%</dd></div>
-                <div class="row"><dt>CAT de ejemplo, sin IVA</dt><dd>29.4%</dd></div>
+                <div class="row"><dt>Tasa con IVA</dt><dd>26.9%</dd></div>
+                <div class="row"><dt>CAT de referencia</dt><dd>29.3% con IVA</dd></div>
               </dl>
             </article>
             <article class="bank">
@@ -509,11 +541,12 @@
                 <div class="row"><dt>Mensualidad</dt><dd class="big" id="c-dim-mens">$0</dd></div>
                 <div class="row"><dt>Total a pagar</dt><dd id="c-dim-total">$0</dd></div>
                 <div class="row"><dt>Intereses</dt><dd id="c-dim-int">$0</dd></div>
-                <div class="row"><dt>Tasa anual de ejemplo</dt><dd>31.88%</dd></div>
-                <div class="row"><dt>CAT de ejemplo, sin IVA</dt><dd>36.0%</dd></div>
+                <div class="row"><dt>Tasa con IVA</dt><dd>37.0%</dd></div>
+                <div class="row"><dt>CAT de referencia</dt><dd>36.0% sin IVA</dd></div>
               </dl>
             </article>
           </div>
+          <p class="fineprint"><strong>Las tasas mostradas incluyen IVA.</strong> El CAT oficial lo emite cada institución en la Carta de Libranza; esa cifra es la vinculante.</p>
           <div class="diff-note" id="diff-note"></div>
           <p class="fineprint" style="margin-top:12px;">Estas tasas y CAT son cifras de ejemplo de mi simulador interno (noviembre de 2026); no son una publicación oficial de las financieras. Cada financiera publica su CAT vigente en su contrato y en la Carta de Libranza; esa es la cifra oficial. DIMEX puede convenir en casos puntuales — rapidez, pensión más baja o edad — por eso reviso tu caso con las dos opciones antes de que decidas.</p>
         </div>
@@ -713,20 +746,30 @@
       (function () {
         "use strict";
         var WA_NUMBER = "525572282451";
+        var MINIMO = 10636.54;
+        var UMBRAL_EDAD_PLAZO_MUL = 79.9;
+        var MIN_MULTIVA = 10000;
+        var MIN_DIMEX = 3000;
         var TASAS = {
-          multiva: { nombre: "Multiva", tasaAnual: 0.269, cat: "29.4%" },
-          dimex: { nombre: "DIMEX", tasaAnual: 0.3188, cat: "36.0%" }
+          // 23.2% sin IVA × 1.16 = 26.9% con IVA
+          multiva: { nombre: "Multiva", tasaAnual: 0.232 * 1.16, cat: "29.3% con IVA" },
+          dimex: { nombre: "DIMEX", tasaAnual: 0.3188 * 1.16, cat: "36.0% sin IVA" }
         };
+        /* Tasas de referencia sin IVA para estimar la tasa implícita de un crédito vigente. */
+        var TASAS_REF = { DIMEX: 0.3188, Multiva: 0.232, Inbursa: 0.25, Consubanco: 0.35, Otro: 0.36 };
         var fmt = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 });
         var fmt2 = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
         var el = {
           pension: document.getElementById("pension"),
           monto: document.getElementById("monto"),
-          subfields: document.getElementById("subfields"),
-          bancoActual: document.getElementById("banco-actual"),
-          pagos: document.getElementById("pagos"),
-          descuentoActual: document.getElementById("descuento-actual"),
+          edad: document.getElementById("edad"),
+          camposCompra: document.getElementById("campos-compra"),
+          deudaMonto: document.getElementById("deuda-monto"),
+          deudaPlazo: document.getElementById("deuda-plazo"),
+          deudaFinanciera: document.getElementById("deuda-financiera"),
+          deudaPagos: document.getElementById("deuda-pagos"),
+          deudaMensualidad: document.getElementById("deuda-mensualidad"),
           rMens: document.getElementById("r-mensualidad"),
           rDetalle: document.getElementById("r-detalle"),
           rTotal: document.getElementById("r-total"),
@@ -746,8 +789,11 @@
           fRango: document.getElementById("f-rango"),
           fDescuentos: document.getElementById("f-descuentos")
         };
+        var montoField = el.monto.closest(".field");
+        var plazoField = document.querySelector('input[name="plazo"]').closest(".field");
 
         function num(input, fallback) {
+          if (!input) return fallback;
           var v = parseFloat(String(input.value).replace(/[^0-9.]/g, ""));
           return isNaN(v) || v < 0 ? fallback : v;
         }
@@ -755,9 +801,15 @@
           var r = document.querySelector('input[name="plazo"]:checked');
           return r ? parseInt(r.value, 10) : 36;
         }
-        function tieneCredito() {
-          var r = document.querySelector('input[name="tiene"]:checked');
-          return r && r.value === "si";
+        function modoActual() {
+          var r = document.querySelector('input[name="modo"]:checked');
+          return r ? r.value : "nuevo";
+        }
+        function esCompra() {
+          return modoActual() === "compra";
+        }
+        function deudaPlazo() {
+          return parseInt(el.deudaPlazo.value, 10) || 36;
         }
         function amortiza(principal, tasaAnual, n) {
           if (principal <= 0 || n <= 0) return { mensual: 0, total: 0, intereses: 0 };
@@ -767,83 +819,266 @@
         }
         function montoMaximo(mensualidadMax, tasaAnual, n) {
           var i = tasaAnual / 12;
+          if (i <= 0 || n <= 0) return 0;
           return mensualidadMax * (1 - Math.pow(1 + i, -n)) / i;
+        }
+        function textoLibre(pension, mensualidad) {
+          return pension - mensualidad >= 0 ? fmt.format(pension - mensualidad) + " /mes" : "No alcanza";
+        }
+
+        /* Busca la tasa mensual que iguala el pago actual. Devuelve null si no hay raíz en el rango 5%–200% anual. */
+        function tasaImplicita(monto, mensualidad, n) {
+          if (monto <= 0 || mensualidad <= 0 || n <= 0) return null;
+          var low = 0.05 / 12;
+          var high = 2 / 12;
+          function f(i) {
+            return monto * i / (1 - Math.pow(1 + i, -n)) - mensualidad;
+          }
+          var fLow = f(low);
+          var fHigh = f(high);
+          if (fLow === 0) return low;
+          if (fHigh === 0) return high;
+          if (fLow * fHigh > 0) return null;
+          for (var k = 0; k < 100; k++) {
+            var mid = (low + high) / 2;
+            var fMid = f(mid);
+            if (fLow * fMid <= 0) {
+              high = mid;
+            } else {
+              low = mid;
+              fLow = fMid;
+            }
+          }
+          return (low + high) / 2;
+        }
+        function tasaMensualActual(monto, mensualidad, n, financiera) {
+          var i = tasaImplicita(monto, mensualidad, n);
+          var anual = i === null ? null : i * 12;
+          if (i === null || anual < 0.05 || anual > 2) {
+            i = (TASAS_REF[financiera] || 0.36) / 12;
+          }
+          return i;
+        }
+        function pago(principal, tasaAnual, n) {
+          if (principal <= 0 || n <= 0) return 0;
+          var i = tasaAnual / 12;
+          return principal * i / (1 - Math.pow(1 + i, -n));
         }
 
         var ultimo = null;
 
-        function calcular() {
-          var pension = num(el.pension, 0);
-          var monto = num(el.monto, 0);
-          var n = plazo();
-          var limite = pension * 0.30;
+        function sincronizarModo(compra) {
+          el.camposCompra.hidden = !compra;
+          el.monto.disabled = compra;
+          document.querySelectorAll('input[name="plazo"]').forEach(function (r) { r.disabled = compra; });
+          document.querySelectorAll(".chips .chip").forEach(function (c) { c.disabled = compra; });
+          montoField.classList.toggle("is-dim", compra);
+          plazoField.classList.toggle("is-dim", compra);
+        }
 
-          var mul = amortiza(monto, TASAS.multiva.tasaAnual, n);
-          var dim = amortiza(monto, TASAS.dimex.tasaAnual, n);
-
-          el.rMens.textContent = fmt2.format(mul.mensual);
-          el.rDetalle.textContent = "al mes, durante " + n + " meses · opción Multiva";
-          el.rTotal.textContent = fmt.format(mul.total);
-          el.rInt.textContent = fmt.format(mul.intereses);
-          el.rLimite.textContent = fmt.format(limite) + " /mes";
-          el.rLibre.textContent = fmt.format(Math.max(pension - mul.mensual, 0)) + " /mes";
-
-          el.cMulMens.textContent = fmt2.format(mul.mensual);
+        function pintarComparativa(mul, dim, base, compra) {
+          el.cMulMens.textContent = mul.mensual > 0 ? fmt2.format(mul.mensual) : fmt.format(0);
           el.cMulTotal.textContent = fmt.format(mul.total);
           el.cMulInt.textContent = fmt.format(mul.intereses);
-          el.cDimMens.textContent = fmt2.format(dim.mensual);
+          el.cDimMens.textContent = dim.mensual > 0 ? fmt2.format(dim.mensual) : fmt.format(0);
           el.cDimTotal.textContent = fmt.format(dim.total);
           el.cDimInt.textContent = fmt.format(dim.intereses);
 
           var ahorroMes = dim.mensual - mul.mensual;
           var ahorroTotal = dim.total - mul.total;
-          if (monto > 0) {
-            el.diffNote.innerHTML = "Por el mismo crédito, con Multiva pagarías <strong>" + fmt.format(ahorroMes) + " menos al mes</strong> y <strong>" + fmt.format(ahorroTotal) + " menos en total</strong> que con DIMEX, según estas cifras de ejemplo.";
+          if (base > 0 && mul.mensual > 0 && dim.mensual > 0) {
+            var sobre = compra
+              ? "Sobre un saldo estimado de <strong>" + fmt.format(base) + "</strong>, con Multiva pagarías "
+              : "Por el mismo crédito, con Multiva pagarías ";
+            el.diffNote.innerHTML = sobre + "<strong>" + fmt.format(ahorroMes) + " menos al mes</strong> y <strong>" + fmt.format(ahorroTotal) + " menos en total</strong> que con DIMEX, según estas cifras de ejemplo.";
             el.tagDimex.textContent = fmt.format(ahorroTotal) + " más en total";
           } else {
-            el.diffNote.textContent = "Escribe un monto para ver la diferencia entre las dos opciones.";
+            el.diffNote.textContent = compra
+              ? "Completa los datos de tu crédito actual para estimar tu saldo y la diferencia entre las dos opciones."
+              : "Escribe un monto para ver la diferencia entre las dos opciones.";
             el.tagDimex.textContent = "Otra opción";
           }
+        }
 
-          /* Capacidad 30% */
+        function pintarComparativaCero(mensaje) {
+          el.cMulMens.textContent = fmt.format(0);
+          el.cMulTotal.textContent = fmt.format(0);
+          el.cMulInt.textContent = fmt.format(0);
+          el.cDimMens.textContent = fmt.format(0);
+          el.cDimTotal.textContent = fmt.format(0);
+          el.cDimInt.textContent = fmt.format(0);
+          el.diffNote.textContent = mensaje;
+          el.tagDimex.textContent = "Otra opción";
+        }
+
+        function calcularNuevo(pension, limite) {
+          var monto = num(el.monto, 0);
+          var n = plazo();
+          var edad = Math.floor(num(el.edad, 0));
+
+          var mul = amortiza(monto, TASAS.multiva.tasaAnual, n);
+          var dim = amortiza(monto, TASAS.dimex.tasaAnual, n);
+
+          el.rMens.textContent = mul.mensual > 0 ? fmt2.format(mul.mensual) : fmt.format(0);
+          el.rDetalle.textContent = "al mes, durante " + n + " meses · opción Multiva";
+          el.rTotal.textContent = fmt.format(mul.total);
+          el.rInt.textContent = fmt.format(mul.intereses);
+          el.rLibre.textContent = textoLibre(pension, mul.mensual);
+
+          pintarComparativa(mul, dim, monto, false);
+
+          el.vCompra.className = "verdict";
+          el.vCompra.innerHTML = "";
           el.vCap.className = "verdict show";
+
           if (pension <= 0 || monto <= 0) {
             el.vCap.classList.add("warn");
             el.vCap.innerHTML = "<strong>Faltan datos</strong>Escribe tu pensión y el monto que quieres solicitar para revisar tu capacidad.";
-          } else if (mul.mensual <= limite) {
+          } else if (monto < MIN_MULTIVA) {
+            el.vCap.classList.add("warn");
+            el.vCap.innerHTML = "<strong>El monto mínimo de Multiva es " + fmt.format(MIN_MULTIVA) + ".</strong> Si necesitas menos, DIMEX arranca en " + fmt.format(MIN_DIMEX) + ".";
+          } else if (mul.mensual > limite) {
             var maximo = montoMaximo(limite, TASAS.multiva.tasaAnual, n);
-            el.vCap.classList.add("ok");
-            el.vCap.innerHTML = "<strong>Sí cabe en tu límite del 30%</strong>Tu descuento máximo permitido es " + fmt.format(limite) + " al mes. Con tu pensión, a " + n + " meses podrías solicitar hasta " + fmt.format(maximo) + " aproximadamente sin pasar ese límite.";
+            el.vCap.classList.add("warn");
+            el.vCap.innerHTML = "<strong>Ese monto rebasa tu límite del 30%</strong>El IMSS solo permite descontarte hasta " + fmt.format(limite) + " al mes. A " + n + " meses, el monto que sí cabe es de aproximadamente " + fmt.format(maximo) + ". Baja el monto o alarga el plazo y revisa de nuevo.";
+          } else if (edad > 0 && edad + (n / 12) > UMBRAL_EDAD_PLAZO_MUL) {
+            el.vCap.classList.add("warn");
+            el.vCap.innerHTML = "<strong>Con tu edad y este plazo, Multiva no califica</strong> (regla: edad + plazo ≤ 79 años 11 meses). DIMEX puede ser opción.";
+          } else if (pension > MINIMO && pension - mul.mensual < MINIMO) {
+            el.vCap.classList.add("warn");
+            el.vCap.innerHTML = "<strong>La pensión quedaría por debajo del mínimo garantizado ($10,636.54).</strong> El IMSS no permite ese descuento.";
           } else {
             var maximo2 = montoMaximo(limite, TASAS.multiva.tasaAnual, n);
-            el.vCap.classList.add("warn");
-            el.vCap.innerHTML = "<strong>Ese monto rebasa tu límite del 30%</strong>El IMSS solo permite descontarte hasta " + fmt.format(limite) + " al mes. A " + n + " meses, el monto que sí cabe es de aproximadamente " + fmt.format(maximo2) + ". Baja el monto o alarga el plazo y revisa de nuevo.";
+            el.vCap.classList.add("ok");
+            el.vCap.innerHTML = "<strong>Sí cabe en tu 30%</strong>Tu descuento máximo permitido es " + fmt.format(limite) + " al mes. Con tu pensión, a " + n + " meses podrías solicitar hasta " + fmt.format(maximo2) + " aproximadamente sin pasar ese límite.";
           }
 
-          /* Compra de deuda */
-          var tiene = tieneCredito();
-          el.subfields.hidden = !tiene;
-          el.vCompra.className = "verdict";
-          el.vCompra.innerHTML = "";
-          if (tiene) {
-            var pagos = Math.floor(num(el.pagos, 0));
-            var descActual = num(el.descuentoActual, 0);
-            el.vCompra.classList.add("show");
-            if (pagos > 24) {
-              var extra = "";
-              if (descActual > 0 && mul.mensual > 0) {
-                var dif = descActual - mul.mensual;
-                if (dif > 0) {
-                  extra = " Por el monto simulado, tu mensualidad bajaría unos " + fmt.format(dif) + " frente a los " + fmt.format(descActual) + " que te descuentan hoy con " + el.bancoActual.value + ".";
-                }
-              }
-              el.vCompra.classList.add("ok");
-              el.vCompra.innerHTML = "<strong>Tu caso se puede revisar para compra de deuda</strong>Llevas " + pagos + " pagos, más de los 24 que pide el IMSS. Otra financiera podría pagar tu crédito actual y dejarte una mensualidad menor, o la misma con efectivo a tu favor." + extra + " El monto exacto de efectivo, si aplica, sale de la verificación en el portal del IMSS — nunca antes.";
-            } else {
-              var faltan = 25 - pagos;
-              el.vCompra.classList.add("warn");
-              el.vCompra.innerHTML = "<strong>Todavía no califica para compra de deuda</strong>La regla del IMSS pide más de 24 descuentos pagados y llevas " + pagos + ". Te faltan " + faltan + (faltan === 1 ? " pago" : " pagos") + ". Mientras tanto, sí puedes revisar un crédito nuevo si tu límite del 30% lo permite.";
+          ultimo = { modo: "nuevo", pension: pension, monto: monto, n: n, edad: edad, mul: mul, dim: dim, limite: limite, compra: null };
+        }
+
+        function calcularCompra(pension, limite) {
+          var monto = num(el.deudaMonto, 0);
+          var plazoOriginal = deudaPlazo();
+          var pagos = Math.floor(num(el.deudaPagos, 0));
+          var mensualidad = num(el.deudaMensualidad, 0);
+          var financiera = el.deudaFinanciera.value;
+          var restantes = plazoOriginal - pagos;
+
+          el.vCap.className = "verdict";
+          el.vCap.innerHTML = "";
+          el.vCompra.className = "verdict show";
+
+          var base = {
+            modo: "compra",
+            compra: {
+              financiera: financiera,
+              monto: monto,
+              plazo: plazoOriginal,
+              pagos: pagos,
+              mensualidad: mensualidad,
+              restantes: restantes,
+              calificable: false
             }
+          };
+
+          if (pagos <= 24) {
+            var faltan = 25 - pagos;
+            el.rMens.textContent = fmt.format(0);
+            el.rDetalle.textContent = "Aún no califica: se requieren más de 24 pagos";
+            el.rTotal.textContent = fmt.format(0);
+            el.rInt.textContent = fmt.format(0);
+            el.rLibre.textContent = "No aplica";
+            pintarComparativaCero("La compra de deuda requiere más de 24 descuentos pagados. Te faltan " + faltan + (faltan === 1 ? " pago" : " pagos") + ".");
+            el.vCompra.classList.add("warn");
+            el.vCompra.innerHTML = "<strong>Aún no califica: el IMSS pide más de 24 descuentos pagados.</strong> Te faltan " + faltan + (faltan === 1 ? " pago" : " pagos") + ".";
+            base.compra.faltan = faltan;
+            ultimo = base;
+            return;
+          }
+
+          if (restantes <= 0) {
+            el.rMens.textContent = fmt.format(0);
+            el.rDetalle.textContent = "Crédito ya liquidado con los pagos que llevas";
+            el.rTotal.textContent = fmt.format(0);
+            el.rInt.textContent = fmt.format(0);
+            el.rLibre.textContent = "No aplica";
+            pintarComparativaCero("Con los pagos que llevas, tu crédito original ya estaría liquidado. Revisa el plazo original o los pagos realizados.");
+            el.vCompra.classList.add("warn");
+            el.vCompra.innerHTML = "<strong>Tu crédito ya estaría liquidado</strong>Con " + pagos + " pagos de un plazo de " + plazoOriginal + " meses no quedan meses por pagar. Revisa el plazo original o los pagos realizados.";
+            ultimo = base;
+            return;
+          }
+
+          if (monto <= 0 || mensualidad <= 0) {
+            el.rMens.textContent = fmt.format(0);
+            el.rDetalle.textContent = "Completa los datos de tu crédito actual";
+            el.rTotal.textContent = fmt.format(0);
+            el.rInt.textContent = fmt.format(0);
+            el.rLibre.textContent = "No aplica";
+            pintarComparativaCero("Escribe el monto original y la mensualidad que pagas hoy para estimar tu saldo.");
+            el.vCompra.classList.add("warn");
+            el.vCompra.innerHTML = "<strong>Faltan datos</strong>Escribe cuánto pediste prestado y cuánto te descuentan al mes hoy.";
+            ultimo = base;
+            return;
+          }
+
+          var iActual = tasaMensualActual(monto, mensualidad, restantes, financiera);
+          var saldo = mensualidad * (1 - Math.pow(1 + iActual, -restantes)) / iActual;
+          var nueva = pago(saldo, TASAS.multiva.tasaAnual, restantes);
+          var nuevaDim = pago(saldo, TASAS.dimex.tasaAnual, restantes);
+          var ahorroMes = mensualidad - nueva;
+          var ahorroTotal = ahorroMes * restantes;
+
+          var mul = { mensual: nueva, total: nueva * restantes, intereses: nueva * restantes - saldo };
+          var dim = { mensual: nuevaDim, total: nuevaDim * restantes, intereses: nuevaDim * restantes - saldo };
+
+          el.rMens.textContent = fmt2.format(nueva);
+          el.rDetalle.textContent = "al mes, con Multiva, a " + restantes + " meses restantes";
+          el.rTotal.textContent = fmt.format(nueva * restantes);
+          el.rInt.textContent = fmt.format(nueva * restantes - saldo);
+          el.rLibre.textContent = textoLibre(pension, nueva);
+
+          pintarComparativa(mul, dim, saldo, true);
+
+          var cabe30 = nueva <= limite + 0.01;
+          var respetaMinimo = !(pension > MINIMO && pension - nueva < MINIMO);
+
+          if (!cabe30) {
+            el.vCompra.classList.add("warn");
+            el.vCompra.innerHTML = "<strong>La nueva mensualidad no cabe en tu 30%.</strong> Tu límite es " + fmt.format(limite) + " al mes y la nueva mensualidad estimada con Multiva es de " + fmt2.format(nueva) + ".";
+          } else if (!respetaMinimo) {
+            el.vCompra.classList.add("warn");
+            el.vCompra.innerHTML = "<strong>La pensión quedaría por debajo del mínimo.</strong> Con la nueva mensualidad de " + fmt2.format(nueva) + " te quedarían " + fmt.format(pension - nueva) + ", por debajo de los $10,636.54 garantizados.";
+          } else if (ahorroMes <= 0) {
+            el.vCompra.classList.add("warn");
+            el.vCompra.innerHTML = "<strong>No hay ahorro real con estos datos.</strong> No conviene cambiar solo por cambiar.";
+          } else {
+            el.vCompra.classList.add("ok");
+            el.vCompra.innerHTML = "<strong>Sí conviene revisar tu compra de deuda.</strong> Hoy pagas " + fmt2.format(mensualidad) + " y con Multiva pagarías " + fmt2.format(nueva) + ". Ahorro estimado: " + fmt.format(ahorroMes) + " al mes y " + fmt.format(ahorroTotal) + " en total.";
+          }
+
+          base.compra.calificable = true;
+          base.compra.saldo = saldo;
+          base.compra.nueva = nueva;
+          base.compra.ahorroMes = ahorroMes;
+          base.compra.ahorroTotal = ahorroTotal;
+          base.compra.tasaMensualActual = iActual;
+          base.compra.limite = limite;
+          ultimo = base;
+        }
+
+        function calcular() {
+          var compra = esCompra();
+          sincronizarModo(compra);
+
+          var pension = num(el.pension, 0);
+          var limite = pension * 0.30;
+          el.rLimite.textContent = fmt.format(limite) + " /mes";
+
+          if (compra) {
+            calcularCompra(pension, limite);
+          } else {
+            calcularNuevo(pension, limite);
           }
 
           /* Sincroniza el formulario */
@@ -855,9 +1090,7 @@
               : "Más de $25,000";
             el.fRango.value = rango;
           }
-          el.fDescuentos.value = tiene ? "Sí" : "No";
-
-          ultimo = { pension: pension, monto: monto, n: n, mul: mul, dim: dim, limite: limite, tiene: tiene };
+          el.fDescuentos.value = compra ? "Sí" : "No";
         }
 
         ["input", "change"].forEach(function (evt) {
@@ -865,20 +1098,18 @@
             if (e.target.closest(".card")) calcular();
           });
         });
-        el.bancoActual.addEventListener("change", calcular);
-        el.pagos.addEventListener("input", calcular);
-        el.descuentoActual.addEventListener("input", calcular);
 
-        document.querySelectorAll(".chip").forEach(function (chip) {
+        document.querySelectorAll(".chips .chip").forEach(function (chip) {
           chip.addEventListener("click", function () {
+            if (chip.disabled) return;
             el.monto.value = chip.getAttribute("data-monto");
-            document.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+            document.querySelectorAll(".chips .chip").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
             chip.setAttribute("aria-pressed", "true");
             calcular();
           });
         });
         el.monto.addEventListener("input", function () {
-          document.querySelectorAll(".chip").forEach(function (c) {
+          document.querySelectorAll(".chips .chip").forEach(function (c) {
             c.setAttribute("aria-pressed", String(parseFloat(c.getAttribute("data-monto")) === num(el.monto, -1)));
           });
         });
@@ -920,16 +1151,28 @@
             "¿Ya tengo descuentos de un crédito?: " + descuentos + "."
           ];
           if (municipio) lineas.push("Vivo en: " + municipio + ".");
-          if (ultimo && ultimo.monto > 0) {
+          if (ultimo && ultimo.modo === "compra" && ultimo.compra) {
+            var c = ultimo.compra;
+            lineas.push("");
+            lineas.push("Mi crédito actual:");
+            lineas.push("- Financiera: " + c.financiera);
+            lineas.push("- Monto original: " + fmt.format(c.monto));
+            lineas.push("- Plazo original: " + c.plazo + " meses");
+            lineas.push("- Pagos realizados: " + c.pagos);
+            lineas.push("- Mensualidad actual: " + fmt.format(c.mensualidad) + "/mes");
+            if (c.calificable) {
+              lineas.push("- Saldo estimado: " + fmt.format(c.saldo) + " (aproximado)");
+              lineas.push("- Nueva mensualidad estimada con Multiva: " + fmt2.format(c.nueva));
+              lineas.push("- Ahorro estimado: " + fmt.format(c.ahorroMes) + " al mes");
+            } else {
+              lineas.push("- Estatus: aún no califica para compra de deuda (se requieren más de 24 pagos).");
+            }
+          } else if (ultimo && ultimo.monto > 0) {
             lineas.push("");
             lineas.push("Mi simulación en la página:");
             lineas.push("- Monto: " + fmt.format(ultimo.monto) + " a " + ultimo.n + " meses");
             lineas.push("- Multiva: " + fmt2.format(ultimo.mul.mensual) + "/mes · total " + fmt.format(ultimo.mul.total));
             lineas.push("- DIMEX: " + fmt2.format(ultimo.dim.mensual) + "/mes · total " + fmt.format(ultimo.dim.total));
-            if (ultimo.tiene) {
-              var pagos = Math.floor(num(el.pagos, 0));
-              lineas.push("- Ya tengo crédito con " + el.bancoActual.value + ", llevo " + pagos + " pagos y me descuentan " + fmt.format(num(el.descuentoActual, 0)) + "/mes.");
-            }
           }
           var url = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(lineas.join("\n"));
           window.open(url, "_blank", "noopener");
