@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="Ismael Palencia, asesor independiente de créditos para pensionados IMSS Ley 73. Simula tu crédito, revisa el límite del 30% y si tu crédito actual se puede mejorar con una compra de deuda." />
+    <link rel="icon" href="data:," />
+    <title>Ismael Palencia — Créditos para pensionados Ley 73 | Simulador</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,900&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        color-scheme: light dark;
+        /* Psicología del color para confianza financiera:
+           azul marino profundo = seguridad, estabilidad y seriedad institucional;
+           blanco y gris azulado = claridad y transparencia, sin adornos que distraigan;
+           dorado cálido en dosis pequeñas = cercanía humana y trato personal, no frialdad de banco;
+           verde solo para confirmar y para WhatsApp = “todo está bien”. */
+        --bg:#F6F8FB;
+        --bg-soft:#EAF0F7;
+        --surface:#FFFFFF;
+        --surface-2:#F2F6FA;
+        --ink:#10243E;
+        --muted:#546A84;
+        --line:#D6E0EC;
+        --brand:#14365E;
+        --brand-dark:#0B2340;
+        --brand-soft:#E3ECF5;
+        --accent:#8A6100;
+        --accent-bg:#FEF0C8;
+        --accent-strong:#C4901A;
+        --price:#7A5500;
+        --ok:#166534;
+        --ok-bg:#E6F4EA;
+        --warn:#9E2B25;
+        --warn-bg:#FDECEA;
+        --wa:#1FA855;
+        --wa-dark:#177E40;
+        --shadow:0 10px 30px rgba(11,35,64,.10);
+        --radius:14px;
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#0A1626;
+          --bg-soft:#0F2138;
+          --surface:#132842;
+          --surface-2:#1A3659;
+          --ink:#EDF2F8;
+          --muted:#A8BCD4;
+          --line:#2A4566;
+          --brand:#7FB0E0;
+          --brand-dark:#7FB0E0;
+          --brand-soft:#1B3555;
+          --accent:#E8BC4A;
+          --accent-bg:#3A2E0F;
+          --accent-strong:#E8BC4A;
+          --price:#E8BC4A;
+          --ok:#7BD6A2;
+          --ok-bg:#173528;
+          --warn:#FF9D8F;
+          --warn-bg:#3D201C;
+          --shadow:0 10px 30px rgba(0,0,0,.45);
+        }
+      }
+      *{ box-sizing:border-box; }
+      html{ scroll-behavior:smooth; }
+      @media (prefers-reduced-motion: reduce){
+        html{ scroll-behavior:auto; }
+        *{ transition:none !important; animation:none !important; }
+      }
+      body{
+        margin:0;
+        background:var(--bg);
+        color:var(--ink);
+        font-family:"Libre Franklin", -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size:18px;
+        line-height:1.55;
+        -webkit-font-smoothing:antialiased;
+      }
+      h1,h2,h3{ font-family:"Source Serif 4", Georgia, "Times New Roman", serif; line-height:1.15; margin:0; }
+      p{ margin:0; }
+      a{ color:var(--brand); }
+      @media (prefers-color-scheme: dark){ a{ color:var(--accent); } }
+      .wrap{ max-width:1060px; margin:0 auto; padding:0 20px; }
+      button, [role="button"], select, summary, input:not([type="checkbox"],[type="radio"]){ min-height:48px; }
+      :focus-visible{ outline:3px solid var(--accent); outline-offset:2px; border-radius:6px; }
+
+      /* ---------- Top strip: marca personal en la raíz ---------- */
+      .topstrip{
+        background:var(--brand-dark);
+        color:#FFFFFF;
+      }
+      @media (prefers-color-scheme: dark){ .topstrip{ background:#081A30; color:#EDF2F8; } }
+      .topstrip .wrap{
+        display:flex; align-items:center; justify-content:space-between; gap:14px;
+        padding-top:12px; padding-bottom:12px; flex-wrap:wrap;
+      }
+      .brand-person{ display:flex; align-items:center; gap:13px; min-width:0; }
+      .avatar{
+        flex:none; width:48px; height:48px; border-radius:50%;
+        background:var(--accent-strong); color:#0B2340;
+        display:flex; align-items:center; justify-content:center;
+        font-family:"Source Serif 4", Georgia, serif; font-weight:900; font-size:1.15rem; letter-spacing:.02em;
+        border:2px solid rgba(255,255,255,.85);
+      }
+      @media (prefers-color-scheme: dark){ .avatar{ color:#081A30; } }
+      .brandmark{ font-family:"Source Serif 4", Georgia, serif; font-weight:700; font-size:1.22rem; letter-spacing:.01em; line-height:1.1; }
+      .brandmark small{ display:block; font-family:"Libre Franklin", sans-serif; font-weight:600; font-size:.76rem; letter-spacing:.07em; text-transform:uppercase; color:#E8BC4A; margin-top:3px; }
+      .independent{
+        font-size:.85rem; font-weight:600; border:1px solid rgba(255,255,255,.45);
+        padding:7px 12px; border-radius:999px; white-space:nowrap; color:inherit;
+      }
+      @media (max-width:560px){ .independent{ white-space:normal; } }
+
+      /* ---------- Hero ---------- */
+      .hero{ background:var(--bg-soft); border-bottom:1px solid var(--line); }
+      .hero .wrap{ padding-top:40px; padding-bottom:40px; max-width:1060px; }
+      .hero-intro{
+        display:inline-flex; align-items:center; gap:10px; flex-wrap:wrap;
+        background:var(--surface); border:1px solid var(--line); border-radius:999px;
+        padding:8px 16px 8px 10px; font-size:.95rem; font-weight:600; color:var(--ink);
+        margin-bottom:20px; box-shadow:0 4px 14px rgba(11,35,64,.06);
+      }
+      .hero-intro .dot{ width:9px; height:9px; border-radius:50%; background:var(--ok); flex:none; }
+      .hero-intro strong{ color:var(--brand); }
+      @media (prefers-color-scheme: dark){ .hero-intro strong{ color:var(--accent); } }
+      .hero-sign{
+        margin-top:22px; display:flex; gap:14px; align-items:flex-start;
+        background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+        padding:18px 20px; max-width:44em;
+      }
+      .hero-sign .avatar{ width:52px; height:52px; font-size:1.25rem; border-color:var(--brand-soft); }
+      .hero-sign p{ font-size:.98rem; color:var(--muted); }
+      .hero-sign p strong{ color:var(--ink); display:block; font-size:1.02rem; }
+      .hero h1{ font-size:clamp(2rem, 6vw, 3.3rem); font-weight:900; max-width:16em; }
+      .hero h1 .hl{ color:var(--brand); box-shadow:inset 0 -0.42em 0 var(--accent-bg); }
+      @media (prefers-color-scheme: dark){ .hero h1 .hl{ color:var(--accent); box-shadow:none; text-decoration:underline; text-decoration-color:var(--brand); text-underline-offset:6px; } }
+      .hero .sub{ margin-top:18px; font-size:1.15rem; max-width:38em; color:var(--ink); }
+      .hero .sub strong{ color:var(--brand); }
+      @media (prefers-color-scheme: dark){ .hero .sub strong{ color:var(--accent); } }
+      .cta-row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:26px; }
+      .btn{
+        display:inline-flex; align-items:center; justify-content:center; gap:10px;
+        font:inherit; font-weight:700; font-size:1.05rem; text-decoration:none;
+        border-radius:12px; padding:14px 26px; min-height:56px; cursor:pointer; border:2px solid transparent;
+        transition:transform .12s ease, background .12s ease;
+      }
+      .btn:active{ transform:scale(.98); }
+      .btn-primary{ background:var(--brand); color:#FFFFFF; }
+      .btn-primary:hover{ background:var(--brand-dark); }
+      @media (prefers-color-scheme: dark){ .btn-primary{ background:var(--brand); color:#0A1626; } .btn-primary:hover{ background:#9AC2E8; } }
+      .btn-ghost{ background:transparent; color:var(--ink); border-color:var(--line); }
+      .btn-ghost:hover{ border-color:var(--brand); }
+      .trust-row{ display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:26px; font-size:.95rem; font-weight:600; color:var(--muted); }
+      .trust-row span{ display:inline-flex; align-items:center; gap:8px; }
+      .trust-row svg{ flex:none; }
+
+      /* ---------- Sections ---------- */
+      section{ padding:52px 0; }
+      .sec-head{ max-width:44em; margin-bottom:28px; }
+      .sec-head h2{ font-size:clamp(1.6rem, 4vw, 2.2rem); font-weight:900; }
+      .sec-head p{ margin-top:10px; color:var(--muted); font-size:1.05rem; }
+
+      /* ---------- Simulator ---------- */
+      .sim-grid{ display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:start; }
+      @media (max-width:860px){ .sim-grid{ grid-template-columns:1fr; } }
+      .card{
+        background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+        box-shadow:var(--shadow); padding:26px;
+      }
+      .card h3{ font-size:1.3rem; font-weight:700; margin-bottom:6px; }
+      .card .hint{ color:var(--muted); font-size:.95rem; margin-bottom:20px; }
+      .field{ margin-bottom:22px; }
+      .field:last-child{ margin-bottom:0; }
+      label.flabel{ display:block; font-weight:700; font-size:1rem; margin-bottom:8px; }
+      .money{
+        display:flex; align-items:stretch; border:2px solid var(--line); border-radius:12px; overflow:hidden; background:var(--surface-2);
+      }
+      .money:focus-within{ border-color:var(--brand); }
+      .money .sign{
+        display:flex; align-items:center; padding:0 14px; font-weight:800; font-size:1.2rem;
+        background:var(--brand-soft); color:var(--brand);
+      }
+      @media (prefers-color-scheme: dark){ .money .sign{ color:var(--accent); } }
+      .money input{
+        flex:1; min-width:0; border:0; background:transparent; color:var(--ink);
+        font:inherit; font-size:1.35rem; font-weight:700; padding:12px 14px;
+      }
+      .money input:focus{ outline:none; }
+      .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+      .chip{
+        font:inherit; font-size:.92rem; font-weight:600; cursor:pointer;
+        background:var(--surface-2); color:var(--ink); border:1.5px solid var(--line);
+        border-radius:999px; padding:8px 16px; min-height:44px;
+      }
+      .chip:hover{ border-color:var(--brand); }
+      .chip[aria-pressed="true"]{ background:var(--brand); border-color:var(--brand); color:#FFFFFF; }
+      @media (prefers-color-scheme: dark){ .chip[aria-pressed="true"]{ color:#0A1626; } }
+      .seg{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+      .seg label{
+        display:flex; align-items:center; justify-content:center; gap:9px;
+        border:2px solid var(--line); border-radius:12px; padding:12px 6px; min-height:56px;
+        font-weight:700; font-size:1.05rem; cursor:pointer; background:var(--surface-2); text-align:center;
+      }
+      .seg label small{ display:block; font-size:.72rem; font-weight:600; color:var(--muted); }
+      .seg input{ width:22px; height:22px; flex:none; accent-color:var(--brand); cursor:pointer; margin:0; }
+      .seg label:has(input:checked){ background:var(--brand); border-color:var(--brand); color:#FFFFFF; }
+      .seg label:has(input:checked) small{ color:inherit; opacity:.85; }
+      .seg label:has(input:checked) input{ accent-color:#FFFFFF; }
+      @media (prefers-color-scheme: dark){ .seg label:has(input:checked){ color:#0A1626; } .seg label:has(input:checked) input{ accent-color:#0A1626; } }
+      .seg label:has(input:focus-visible){ outline:3px solid var(--accent); outline-offset:2px; }
+      .toggle-row{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+      .toggle-row label{
+        display:flex; align-items:center; justify-content:center; gap:9px;
+        border:2px solid var(--line); border-radius:12px; padding:12px; min-height:52px;
+        font-weight:700; cursor:pointer; background:var(--surface-2); text-align:center;
+      }
+      .toggle-row input{ width:22px; height:22px; flex:none; accent-color:var(--brand); cursor:pointer; margin:0; }
+      .toggle-row label:has(input:checked){ background:var(--brand); border-color:var(--brand); color:#FFFFFF; }
+      .toggle-row label:has(input:checked) input{ accent-color:#FFFFFF; }
+      @media (prefers-color-scheme: dark){ .toggle-row label:has(input:checked){ color:#0A1626; } .toggle-row label:has(input:checked) input{ accent-color:#0A1626; } }
+      .toggle-row label:has(input:focus-visible){ outline:3px solid var(--accent); outline-offset:2px; }
+      .subfields{ margin-top:18px; border-top:1px dashed var(--line); padding-top:18px; }
+      .subfields[hidden]{ display:none; }
+      select.sel, input.txt{
+        width:100%; font:inherit; font-size:1.05rem; font-weight:600; color:var(--ink);
+        background:var(--surface-2); border:2px solid var(--line); border-radius:12px; padding:12px 14px;
+      }
+      select.sel:focus, input.txt:focus{ border-color:var(--brand); outline:none; }
+
+      /* Results */
+      .result-card{ position:sticky; top:16px; }
+      @media (max-width:860px){ .result-card{ position:static; } }
+      .big-result{ background:var(--brand-soft); border-radius:12px; padding:20px; text-align:left; }
+      .big-result .cap{ font-size:.9rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--brand); }
+      @media (prefers-color-scheme: dark){ .big-result .cap{ color:var(--accent); } }
+      .big-result .amount{ font-family:"Source Serif 4", Georgia, serif; font-size:clamp(2.4rem, 7vw, 3.2rem); font-weight:900; line-height:1.05; margin-top:4px; }
+      .big-result .per{ font-weight:600; color:var(--muted); font-size:1rem; }
+      .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+      .stat{ border:1px solid var(--line); border-radius:12px; padding:14px 16px; background:var(--surface-2); }
+      .stat .k{ font-size:.85rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+      .stat .v{ font-size:1.3rem; font-weight:800; margin-top:2px; }
+      .verdict{ margin-top:14px; border-radius:12px; padding:16px 18px; font-size:1rem; display:none; }
+      .verdict.show{ display:block; }
+      .verdict.ok{ background:var(--ok-bg); color:var(--ink); border:1px solid var(--ok); }
+      .verdict.warn{ background:var(--warn-bg); color:var(--ink); border:1px solid var(--warn); }
+      .verdict strong{ display:block; font-size:1.05rem; margin-bottom:4px; }
+      .verdict.ok strong{ color:var(--ok); }
+      .verdict.warn strong{ color:var(--warn); }
+      @media (prefers-color-scheme: dark){ .verdict.ok strong{ color:var(--ok); } .verdict.warn strong{ color:var(--warn); } }
+      .result-cta{ margin-top:18px; width:100%; }
+      .fineprint{ margin-top:14px; font-size:.85rem; color:var(--muted); line-height:1.5; }
+
+      /* Comparison */
+      .compare{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:22px; }
+      @media (max-width:640px){ .compare{ grid-template-columns:1fr; } }
+      .bank{
+        border:2px solid var(--line); border-radius:var(--radius); padding:22px; background:var(--surface);
+      }
+      .bank.best{ border-color:var(--brand); }
+      .bank .bname{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+      .bank .bname h3{ font-size:1.35rem; }
+      .tag{
+        font-size:.78rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+        background:var(--accent-bg); color:var(--price); padding:5px 10px; border-radius:999px; white-space:nowrap;
+      }
+      .bank dl{ margin:16px 0 0; }
+      .bank .row{ display:flex; justify-content:space-between; gap:14px; padding:9px 0; border-top:1px solid var(--line); }
+      .bank .row dt{ color:var(--muted); font-weight:600; }
+      .bank .row dd{ margin:0; font-weight:800; text-align:right; }
+      .bank .row dd.big{ font-size:1.25rem; color:var(--price); }
+      .diff-note{
+        margin-top:16px; background:var(--accent-bg); border-radius:12px; padding:16px 18px; font-size:1rem;
+      }
+      .diff-note strong{ color:var(--price); }
+
+      /* Steps */
+      .steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+      @media (max-width:860px){ .steps{ grid-template-columns:1fr; } }
+      .step{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:24px; }
+      .step .num{
+        font-family:"Source Serif 4", Georgia, serif; font-weight:900; font-size:2rem; color:var(--brand);
+        width:52px; height:52px; border:2px solid var(--brand); border-radius:50%;
+        display:flex; align-items:center; justify-content:center; margin-bottom:14px;
+      }
+      @media (prefers-color-scheme: dark){ .step .num{ color:var(--accent); border-color:var(--accent); } }
+      .step h3{ font-size:1.2rem; margin-bottom:8px; }
+      .step p{ color:var(--muted); font-size:.98rem; }
+      .step p strong{ color:var(--ink); }
+
+      /* Checklist */
+      .band{ background:var(--bg-soft); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+      .checks{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:12px 28px; }
+      @media (max-width:760px){ .checks{ grid-template-columns:1fr; } }
+      .checks li{ display:flex; gap:12px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
+      .checks .n{
+        flex:none; width:34px; height:34px; border-radius:50%; background:var(--brand); color:#FFFFFF;
+        display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.95rem;
+      }
+      @media (prefers-color-scheme: dark){ .checks .n{ color:#0A1626; } }
+      .checks li strong{ display:block; }
+      .checks li span{ color:var(--muted); font-size:.95rem; }
+      .alerts{ margin-top:22px; background:var(--warn-bg); border:1px solid var(--warn); border-radius:var(--radius); padding:22px 24px; }
+      .alerts h3{ color:var(--warn); font-size:1.25rem; margin-bottom:10px; }
+      .alerts ul{ margin:0; padding-left:22px; }
+      .alerts li{ margin-bottom:6px; }
+      .alerts li:last-child{ margin-bottom:0; }
+
+      /* Lead form */
+      .lead-grid{ display:grid; grid-template-columns:5fr 7fr; gap:22px; align-items:start; }
+      @media (max-width:860px){ .lead-grid{ grid-template-columns:1fr; } }
+      .guide-box{ background:var(--brand-dark); color:#FFFFFF; border-radius:var(--radius); padding:28px; }
+      @media (prefers-color-scheme: dark){ .guide-box{ background:#081A30; } }
+      .guide-box h3{ font-size:1.5rem; margin-bottom:12px; }
+      .guide-box p{ color:#D6E4F2; font-size:1rem; }
+      .guide-box ul{ margin:16px 0 0; padding-left:20px; color:#D6E4F2; }
+      .guide-box li{ margin-bottom:6px; }
+      .guide-box .free{ display:inline-block; margin-top:18px; background:var(--accent-bg); color:#5C3A00; font-weight:800; padding:8px 14px; border-radius:999px; font-size:.9rem; }
+      @media (prefers-color-scheme: dark){ .guide-box .free{ color:#3A2E14; } }
+      .form-card form{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+      @media (max-width:560px){ .form-card form{ grid-template-columns:1fr; } }
+      .form-card .full{ grid-column:1 / -1; }
+      .btn-wa{ background:var(--wa); color:#fff; width:100%; }
+      .btn-wa:hover{ background:var(--wa-dark); }
+      .form-note{ margin-top:14px; font-size:.9rem; color:var(--muted); }
+      .form-error{ display:none; margin-top:12px; background:var(--warn-bg); border:1px solid var(--warn); color:var(--ink); border-radius:10px; padding:12px 14px; font-size:.95rem; }
+      .form-error.show{ display:block; }
+      .never{
+        margin-top:18px; border:1.5px dashed var(--warn); border-radius:12px; padding:14px 16px; font-size:.95rem;
+      }
+      .never strong{ color:var(--warn); }
+
+      /* FAQ + footer */
+      details.faq{ background:var(--surface); border:1px solid var(--line); border-radius:12px; margin-bottom:10px; }
+      details.faq summary{ cursor:pointer; font-weight:700; padding:16px 20px; font-size:1.05rem; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+      details.faq summary::-webkit-details-marker{ display:none; }
+      details.faq summary::after{ content:"+"; font-size:1.5rem; font-weight:400; color:var(--brand); flex:none; }
+      details.faq[open ] summary::after{ content:"–"; }
+      details.faq .a{ padding:0 20px 18px; color:var(--muted); }
+      details.faq .a strong{ color:var(--ink); }
+      footer{ border-top:1px solid var(--line); padding:36px 0 48px; background:var(--bg-soft); }
+      footer .cols{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+      @media (max-width:640px){ footer .cols{ grid-template-columns:1fr; } }
+      footer h3{ font-size:1.05rem; font-family:"Libre Franklin", sans-serif; font-weight:800; margin-bottom:10px; }
+      footer p, footer li{ font-size:.92rem; color:var(--muted); }
+      footer ul{ margin:0; padding-left:18px; }
+      .sticky-cta{
+        position:fixed; left:0; right:0; bottom:0; z-index:20;
+        padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+        background:color-mix(in srgb, var(--surface) 92%, transparent);
+        backdrop-filter:blur(8px); border-top:1px solid var(--line);
+        display:none;
+      }
+      @media (max-width:860px){ .sticky-cta{ display:block; } body{ padding-bottom:84px; } }
+      .sticky-cta .btn{ width:100%; }
+    </style>
+  </head>
+  <body>
+    <div class="topstrip">
+      <div class="wrap">
+        <div class="brand-person">
+          <div class="avatar" aria-hidden="true">IP</div>
+          <div class="brandmark">Ismael Palencia<small>Asesor de créditos · Pensionados Ley 73</small></div>
+        </div>
+        <div class="independent">Asesor independiente · No soy del IMSS ni de un banco</div>
+      </div>
+    </div>
+
+    <header class="hero">
+      <div class="wrap">
+        <div class="hero-intro"><span class="dot" aria-hidden="true"></span> Hola, soy <strong>Ismael Palencia</strong> — te atiendo yo personalmente por WhatsApp</div>
+        <h1>¿Eres pensionado <span class="hl">Ley 73</span>? Revisa si tu crédito se puede mejorar.</h1>
+        <p class="sub">Simula tu crédito en menos de un minuto: cuánto pagarías al mes, cuánto es el total y si tu descuento cabe en el <strong>límite del 30% que permite el IMSS</strong>. Sin costo y sin compromiso. Esta es mi página: aquí no hay una empresa detrás, hablas conmigo.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#simulador">Simular mi crédito</a>
+          <a class="btn btn-ghost" href="#formulario">Quiero la guía gratis</a>
+        </div>
+        <div class="hero-sign">
+          <div class="avatar" aria-hidden="true">IP</div>
+          <p><strong>Ismael Palencia — Asesor independiente, Coyoacán, CDMX</strong>Te ayudo a comparar tu crédito con calma, con los números claros antes de firmar. La verificación siempre se hace en el portal oficial del IMSS y tú escribes tu contraseña en tu dispositivo: yo solo te guío.</p>
+        </div>
+        <div class="trust-row">
+          <span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 7.8-7 9-4-1.2-7-4.4-7-9V6l7-3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Sin anticipo, nunca</span>
+          <span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 10V7a4 4 0 018 0v3" stroke="currentColor" stroke-width="1.8"/></svg> Nunca te pedimos NIP ni contraseñas</span>
+          <span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V8l8-5 8 5v12" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20v-6h6v6" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg> La verificación se hace en el portal oficial del IMSS</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- ============ SIMULADOR ============ -->
+      <section id="simulador" aria-labelledby="sim-title">
+        <div class="wrap">
+          <div class="sec-head">
+            <h2 id="sim-title">Simulador de crédito</h2>
+            <p>Mueve los datos y el resultado se calcula al momento, aquí mismo en tu celular. Nada de lo que escribas sale de esta página hasta que tú decidas enviarlo.</p>
+          </div>
+
+          <div class="sim-grid">
+            <div class="card">
+              <h3>Tus datos</h3>
+              <p class="hint">Solo necesitas tres datos. No te pedimos INE, CURP ni NSS.</p>
+
+              <div class="field">
+                <label class="flabel" for="pension">¿Cuánto recibes de pensión al mes?</label>
+                <div class="money">
+                  <span class="sign">$</span>
+                  <input id="pension" type="number" inputmode="numeric" min="0" step="100" value="12000" aria-describedby="pension-help" />
+                </div>
+                <p id="pension-help" class="hint" style="margin:8px 0 0;">El monto que te deposita el IMSS cada mes.</p>
+              </div>
+
+              <div class="field">
+                <label class="flabel" for="monto">¿Cuánto dinero quieres solicitar?</label>
+                <div class="money">
+                  <span class="sign">$</span>
+                  <input id="monto" type="number" inputmode="numeric" min="0" step="1000" value="80000" />
+                </div>
+                <div class="chips" role="group" aria-label="Montos frecuentes">
+                  <button type="button" class="chip" data-monto="50000">$50,000</button>
+                  <button type="button" class="chip" data-monto="80000" aria-pressed="true">$80,000</button>
+                  <button type="button" class="chip" data-monto="120000">$120,000</button>
+                  <button type="button" class="chip" data-monto="200000">$200,000</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <span class="flabel" id="plazo-label">¿A qué plazo?</span>
+                <div class="seg" role="radiogroup" aria-labelledby="plazo-label">
+                  <label><input type="radio" name="plazo" value="18" /><span>18<small>meses</small></span></label>
+                  <label><input type="radio" name="plazo" value="36" checked /><span>36<small>meses</small></span></label>
+                  <label><input type="radio" name="plazo" value="60" /><span>60<small>meses</small></span></label>
+                </div>
+                <p class="hint" style="margin:8px 0 0;">El plazo máximo que permite el IMSS es de 60 meses.</p>
+              </div>
+
+              <div class="field">
+                <span class="flabel" id="actual-label">¿Ya tienes un crédito que te descuentan de tu pensión?</span>
+                <div class="toggle-row" role="radiogroup" aria-labelledby="actual-label">
+                  <label><input type="radio" name="tiene" value="no" checked /> No, sería mi primer crédito</label>
+                  <label><input type="radio" name="tiene" value="si" /> Sí, ya tengo uno</label>
+                </div>
+                <div class="subfields" id="subfields" hidden>
+                  <div class="field">
+                    <label class="flabel" for="banco-actual">¿Con quién lo tienes?</label>
+                    <select class="sel" id="banco-actual">
+                      <option value="DIMEX">DIMEX</option>
+                      <option value="Multiva">Multiva</option>
+                      <option value="Inbursa">Inbursa</option>
+                      <option value="Consubanco">Consubanco</option>
+                      <option value="Otro">Otra financiera</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label class="flabel" for="pagos">¿Cuántos pagos (descuentos) llevas?</label>
+                    <input class="txt" id="pagos" type="number" inputmode="numeric" min="0" max="60" step="1" value="26" />
+                  </div>
+                  <div class="field">
+                    <label class="flabel" for="descuento-actual">¿Cuánto te descuentan al mes hoy?</label>
+                    <div class="money">
+                      <span class="sign">$</span>
+                      <input id="descuento-actual" type="number" inputmode="numeric" min="0" step="50" value="3200" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card result-card" aria-live="polite">
+              <h3>Tu resultado</h3>
+              <p class="hint">Con la opción de menor costo de las dos comparadas abajo.</p>
+              <div class="big-result">
+                <div class="cap">Pagarías al mes</div>
+                <div class="amount" id="r-mensualidad">$0</div>
+                <div class="per" id="r-detalle">durante 36 meses</div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat"><div class="k">Total a pagar</div><div class="v" id="r-total">$0</div></div>
+                <div class="stat"><div class="k">Intereses</div><div class="v" id="r-intereses">$0</div></div>
+                <div class="stat"><div class="k">Tu límite del 30%</div><div class="v" id="r-limite">$0</div></div>
+                <div class="stat"><div class="k">Te quedaría libre</div><div class="v" id="r-libre">$0</div></div>
+              </div>
+              <div class="verdict ok" id="v-capacidad" role="status"></div>
+              <div class="verdict" id="v-compra" role="status"></div>
+              <a class="btn btn-primary result-cta" href="#formulario" id="cta-resultado">Quiero que revisen mi caso</a>
+              <p class="fineprint">Simulación informativa con cifras de ejemplo. No es una oferta ni una aprobación de crédito. El número que manda es el de tu <strong>Carta de Libranza</strong> y la simulación oficial en el portal del IMSS.</p>
+            </div>
+          </div>
+
+          <!-- Comparativa -->
+          <h3 style="font-size:1.45rem; margin-top:40px;">El mismo crédito, en dos opciones</h3>
+          <p style="color:var(--muted); margin-top:8px; max-width:44em;">No todos los CAT son iguales. Esto es lo que pagarías por el mismo monto y plazo según la financiera:</p>
+          <div class="compare">
+            <article class="bank best">
+              <div class="bname"><h3>Multiva</h3><span class="tag">Menor costo</span></div>
+              <dl>
+                <div class="row"><dt>Mensualidad</dt><dd class="big" id="c-mul-mens">$0</dd></div>
+                <div class="row"><dt>Total a pagar</dt><dd id="c-mul-total">$0</dd></div>
+                <div class="row"><dt>Intereses</dt><dd id="c-mul-int">$0</dd></div>
+                <div class="row"><dt>Tasa anual de ejemplo</dt><dd>26.9%</dd></div>
+                <div class="row"><dt>CAT de ejemplo, sin IVA</dt><dd>29.4%</dd></div>
+              </dl>
+            </article>
+            <article class="bank">
+              <div class="bname"><h3>DIMEX</h3><span class="tag" id="tag-dimex">Otra opción</span></div>
+              <dl>
+                <div class="row"><dt>Mensualidad</dt><dd class="big" id="c-dim-mens">$0</dd></div>
+                <div class="row"><dt>Total a pagar</dt><dd id="c-dim-total">$0</dd></div>
+                <div class="row"><dt>Intereses</dt><dd id="c-dim-int">$0</dd></div>
+                <div class="row"><dt>Tasa anual de ejemplo</dt><dd>31.88%</dd></div>
+                <div class="row"><dt>CAT de ejemplo, sin IVA</dt><dd>36.0%</dd></div>
+              </dl>
+            </article>
+          </div>
+          <div class="diff-note" id="diff-note"></div>
+          <p class="fineprint" style="margin-top:12px;">Estas tasas y CAT son cifras de ejemplo de mi simulador interno (noviembre de 2026); no son una publicación oficial de las financieras. Cada financiera publica su CAT vigente en su contrato y en la Carta de Libranza; esa es la cifra oficial. DIMEX puede convenir en casos puntuales — rapidez, pensión más baja o edad — por eso reviso tu caso con las dos opciones antes de que decidas.</p>
+        </div>
+      </section>
+
+      <!-- ============ CÓMO FUNCIONA ============ -->
+      <section aria-labelledby="como-title" style="padding-top:8px;">
+        <div class="wrap">
+          <div class="sec-head">
+            <h2 id="como-title">Cómo funciona</h2>
+            <p>Tres pasos, sin salir de tu casa y sin entregar documentos por adelantado.</p>
+          </div>
+          <div class="steps">
+            <div class="step">
+              <div class="num">1</div>
+              <h3>Simulas aquí, gratis</h3>
+              <p>Con tu pensión, el monto y el plazo ves tu mensualidad y si cabe en tu 30%. Si ya tienes un crédito, revisamos si se puede <strong>comprar tu deuda</strong>: que otra financiera pague la actual y te quede una mensualidad menor, o la misma con dinero en efectivo a tu favor.</p>
+            </div>
+            <div class="step">
+              <div class="num">2</div>
+              <h3>Lo verificamos en el portal del IMSS</h3>
+              <p>Entramos juntos al <strong>portal oficial de préstamos del IMSS</strong>. Tú escribes tu contraseña en tu propio teléfono o computadora: <strong>yo solo te guío, nunca la veo ni te la pido</strong>. Ahí sale tu capacidad real de descuento.</p>
+            </div>
+            <div class="step">
+              <div class="num">3</div>
+              <h3>Presentas tu solicitud</h3>
+              <p>Con tu <strong>Carta de Libranza</strong> se presenta la solicitud ante la financiera que más te convenga. El descuento nunca pasa del 30% de tu pensión y el plazo máximo es de 60 meses, como marca el IMSS.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ANTES DE FIRMAR ============ -->
+      <section class="band" aria-labelledby="guia-title">
+        <div class="wrap">
+          <div class="sec-head">
+            <h2 id="guia-title">Antes de firmar, revisa estas 7 cosas</h2>
+            <p>Es el contenido de la guía gratis. Léelo aquí o pídelo en el formulario para tenerlo en tu WhatsApp.</p>
+          </div>
+          <ol class="checks">
+            <li><span class="n">1</span><div><strong>El CAT, con fuente y fecha</strong><span>Compara el Costo Anual Total, no solo la mensualidad. Un CAT menor es un crédito más barato.</span></div></li>
+            <li><span class="n">2</span><div><strong>El total a pagar</strong><span>Mensualidad por número de meses. Ahí se ve cuánto te cuesta el crédito en realidad.</span></div></li>
+            <li><span class="n">3</span><div><strong>El límite del 30%</strong><span>Por regla del IMSS, tu descuento no puede pasar del 30% de tu pensión.</span></div></li>
+            <li><span class="n">4</span><div><strong>El plazo máximo: 60 meses</strong><span>Si te ofrecen más meses, no es un crédito a cuenta de pensión del IMSS.</span></div></li>
+            <li><span class="n">5</span><div><strong>Cuánto te queda libre</strong><span>Tu pensión menos el descuento es lo que te queda para vivir. Haz esa resta antes de firmar.</span></div></li>
+            <li><span class="n">6</span><div><strong>La Carta de Libranza</strong><span>Es el documento oficial con las condiciones reales. Lo que no esté ahí, no existe.</span></div></li>
+            <li><span class="n">7</span><div><strong>Que la financiera exista en el SIPRES</strong><span>Verifica en el registro de la CONDUSEF que la financiera esté registrada antes de entregar cualquier documento.</span></div></li>
+          </ol>
+          <div class="alerts">
+            <h3>Detente de inmediato si pasa esto</h3>
+            <ul>
+              <li>Te piden un <strong>anticipo</strong> para “liberar” tu crédito. Ninguna financiera seria lo hace.</li>
+              <li>Te piden tu <strong>NIP, tu contraseña del portal del IMSS o tu contraseña del banco</strong>. Eso es solo tuyo.</li>
+              <li>Te garantizan la <strong>aprobación</strong> o un monto antes de verificar tu capacidad en el portal.</li>
+              <li>Te presionan para firmar <strong>hoy mismo</strong> “porque la oferta se acaba”.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ FORMULARIO ============ -->
+      <section id="formulario" aria-labelledby="form-title">
+        <div class="wrap">
+          <div class="sec-head">
+            <h2 id="form-title">Pide tu revisión o tu guía gratis</h2>
+            <p>Déjame tus datos mínimos y te escribo por WhatsApp. El formulario abre tu WhatsApp con el mensaje ya escrito: tú decides si lo envías.</p>
+          </div>
+          <div class="lead-grid">
+            <aside class="guide-box">
+              <h3>Guía gratis: “Antes de firmar”</h3>
+              <p>Las 7 revisiones de esta página en un documento corto, en letra grande, para leerlo en tu celular o enseñárselo a tu familia antes de decidir.</p>
+              <ul>
+                <li>CAT, total a pagar y límite del 30%, explicados sin tecnicismos</li>
+                <li>Cómo verificar una financiera en el SIPRES de la CONDUSEF</li>
+                <li>Las 4 alertas para detenerte antes de firmar</li>
+              </ul>
+              <span class="free">Gratis · Sin compromiso</span>
+            </aside>
+
+            <div class="card form-card">
+              <form id="lead-form" novalidate>
+                <div>
+                  <label class="flabel" for="f-nombre">Tu nombre</label>
+                  <input class="txt" id="f-nombre" type="text" autocomplete="name" placeholder="Ej. José Martínez" required />
+                </div>
+                <div>
+                  <label class="flabel" for="f-wa">Tu WhatsApp (10 dígitos)</label>
+                  <input class="txt" id="f-wa" type="tel" inputmode="tel" autocomplete="tel" placeholder="55 0000 0000" required />
+                </div>
+                <div>
+                  <label class="flabel" for="f-quiero">¿Qué quieres?</label>
+                  <select class="sel" id="f-quiero">
+                    <option value="Que revisen mi simulación">Que revisen mi simulación</option>
+                    <option value="Solo la guía gratis">Solo la guía gratis</option>
+                    <option value="La revisión y la guía gratis">La revisión y la guía gratis</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="flabel" for="f-ley73">¿Eres pensionado Ley 73?</label>
+                  <select class="sel" id="f-ley73">
+                    <option value="Sí, Ley 73">Sí, Ley 73</option>
+                    <option value="No, soy Ley 97">No, soy Ley 97</option>
+                    <option value="No sé">No sé</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="flabel" for="f-rango">¿Cuánto recibes de pensión al mes?</label>
+                  <select class="sel" id="f-rango">
+                    <option value="Menos de $8,000">Menos de $8,000</option>
+                    <option value="$8,000 a $12,000">$8,000 a $12,000</option>
+                    <option value="$12,000 a $18,000" selected>$12,000 a $18,000</option>
+                    <option value="$18,000 a $25,000">$18,000 a $25,000</option>
+                    <option value="Más de $25,000">Más de $25,000</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="flabel" for="f-descuentos">¿Hoy te descuentan algún crédito?</label>
+                  <select class="sel" id="f-descuentos">
+                    <option value="No">No</option>
+                    <option value="Sí">Sí, ya tengo un crédito</option>
+                  </select>
+                </div>
+                <div class="full">
+                  <label class="flabel" for="f-municipio">¿En qué municipio o alcaldía vives?</label>
+                  <input class="txt" id="f-municipio" type="text" autocomplete="address-level2" placeholder="Ej. Coyoacán, CDMX" />
+                </div>
+                <div class="full">
+                  <button type="submit" class="btn btn-wa">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.2 14.2c-.3.8-1.7 1.6-2.4 1.6-.6.1-1.4.2-4.7-1-4-1.6-6.5-5.6-6.7-5.9-.2-.3-1.6-2.1-1.6-4s.9-2.8 1.3-3.2c.3-.4.7-.5 1-.5h.7c.2 0 .5 0 .8.6l1 2.4c.1.2.1.5 0 .7l-.5.7-.5.6c-.2.2-.3.4-.1.7.2.3.8 1.4 1.8 2.2 1.2 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1l.9-1.1c.2-.3.4-.2.7-.1l2.3 1.1c.3.2.5.3.6.4 0 .1 0 .7-.2 1.2z"/></svg>
+                    Enviar por WhatsApp
+                  </button>
+                  <div class="form-error" id="form-error" role="alert"></div>
+                  <p class="form-note">Al enviar se abre WhatsApp con tu mensaje listo para mi número personal de trabajo. No se guarda ningún dato en esta página.</p>
+                  <div class="never"><strong>Nunca te voy a pedir:</strong> INE, CURP, NSS, NIP, contraseñas ni anticipos. Si alguien te los pide a mi nombre, no soy yo.</div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ FAQ ============ -->
+      <section aria-labelledby="faq-title" style="padding-top:8px;">
+        <div class="wrap">
+          <div class="sec-head">
+            <h2 id="faq-title">Preguntas frecuentes</h2>
+          </div>
+          <details class="faq">
+            <summary>¿La simulación es la cifra definitiva?</summary>
+            <div class="a"><p>No. Es una <strong>estimación con cifras de ejemplo</strong> para que compares antes de decidir. La cifra oficial sale de la simulación en el portal del IMSS y de tu Carta de Libranza.</p></div>
+          </details>
+          <details class="faq">
+            <summary>¿Qué es la compra de deuda?</summary>
+            <div class="a"><p>Si ya tienes un crédito y llevas <strong>más de 24 descuentos pagados</strong>, otra financiera puede pagar tu deuda actual y darte un crédito nuevo: con una mensualidad menor, o con la misma mensualidad y la diferencia en efectivo a tu favor. Solo conviene si la simulación oficial confirma que pagas menos o recibes efectivo; nunca se promete antes de verificar.</p></div>
+          </details>
+          <details class="faq">
+            <summary>¿Por qué la verificación se hace en el portal del IMSS?</summary>
+            <div class="a"><p>Porque ahí el IMSS muestra tu capacidad real de descuento y las ofertas de las financieras registradas. Es el portal oficial de “Préstamos a cuenta de pensión con Entidades Financieras”: <a href="https://mclprestamos.imss.gob.mx/mclpe/auth/login" target="_blank" rel="noopener">mclprestamos.imss.gob.mx</a>. Tú escribes tu contraseña en tu dispositivo; yo solo te guío.</p></div>
+          </details>
+          <details class="faq">
+            <summary>¿Eres del IMSS o de un banco?</summary>
+            <div class="a"><p>No. Soy <strong>Ismael Palencia, asesor independiente</strong>: no soy personal del IMSS, de Multiva ni de DIMEX. Te ayudo a comparar opciones y te acompaño en el trámite; el crédito lo otorga la financiera que elijas.</p></div>
+          </details>
+          <details class="faq">
+            <summary>¿Cuánto cuesta la asesoría?</summary>
+            <div class="a"><p>La simulación, la guía y la revisión de tu caso <strong>no tienen costo</strong> y nunca se pide anticipo. Antes de cualquier firma se te explica por escrito si existe alguna condición distinta.</p></div>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <div class="cols">
+          <div>
+            <h3>Ismael Palencia — Pensionados Ley 73</h3>
+            <p>Soy asesor independiente y atiendo personalmente a pensionados del IMSS Ley 73 que quieren un crédito nuevo o mejorar el que ya tienen. No soy personal del IMSS ni de ninguna financiera o banco. Esta página es la principal de mi sitio: si llegaste por auroracomercio.com, llegaste al lugar correcto, conmigo.</p>
+          </div>
+          <div>
+            <h3>Verifica siempre en fuentes oficiales</h3>
+            <ul>
+              <li>Portal oficial de préstamos del IMSS: <a href="https://mclprestamos.imss.gob.mx/mclpe/auth/login" target="_blank" rel="noopener">mclprestamos.imss.gob.mx</a></li>
+              <li>Registro de financieras: SIPRES de la CONDUSEF</li>
+              <li>Tu Carta de Libranza es el documento que manda</li>
+            </ul>
+          </div>
+        </div>
+        <p style="margin-top:24px; font-size:.85rem;">Las cifras de esta página son una simulación informativa con CAT y tasas de ejemplo (noviembre de 2026). No constituyen una oferta, una aprobación ni una promesa de monto o de efectivo. Toda contratación está sujeta a la verificación de capacidad en el portal del IMSS y a la Carta de Libranza de la financiera elegida.</p>
+      </div>
+    </footer>
+
+    <div class="sticky-cta">
+      <a class="btn btn-primary" href="#simulador">Simular mi crédito gratis</a>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+        var WA_NUMBER = "525572282451";
+        var TASAS = {
+          multiva: { nombre: "Multiva", tasaAnual: 0.269, cat: "29.4%" },
+          dimex: { nombre: "DIMEX", tasaAnual: 0.3188, cat: "36.0%" }
+        };
+        var fmt = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 });
+        var fmt2 = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        var el = {
+          pension: document.getElementById("pension"),
+          monto: document.getElementById("monto"),
+          subfields: document.getElementById("subfields"),
+          bancoActual: document.getElementById("banco-actual"),
+          pagos: document.getElementById("pagos"),
+          descuentoActual: document.getElementById("descuento-actual"),
+          rMens: document.getElementById("r-mensualidad"),
+          rDetalle: document.getElementById("r-detalle"),
+          rTotal: document.getElementById("r-total"),
+          rInt: document.getElementById("r-intereses"),
+          rLimite: document.getElementById("r-limite"),
+          rLibre: document.getElementById("r-libre"),
+          vCap: document.getElementById("v-capacidad"),
+          vCompra: document.getElementById("v-compra"),
+          cMulMens: document.getElementById("c-mul-mens"),
+          cMulTotal: document.getElementById("c-mul-total"),
+          cMulInt: document.getElementById("c-mul-int"),
+          cDimMens: document.getElementById("c-dim-mens"),
+          cDimTotal: document.getElementById("c-dim-total"),
+          cDimInt: document.getElementById("c-dim-int"),
+          diffNote: document.getElementById("diff-note"),
+          tagDimex: document.getElementById("tag-dimex"),
+          fRango: document.getElementById("f-rango"),
+          fDescuentos: document.getElementById("f-descuentos")
+        };
+
+        function num(input, fallback) {
+          var v = parseFloat(String(input.value).replace(/[^0-9.]/g, ""));
+          return isNaN(v) || v < 0 ? fallback : v;
+        }
+        function plazo() {
+          var r = document.querySelector('input[name="plazo"]:checked');
+          return r ? parseInt(r.value, 10) : 36;
+        }
+        function tieneCredito() {
+          var r = document.querySelector('input[name="tiene"]:checked');
+          return r && r.value === "si";
+        }
+        function amortiza(principal, tasaAnual, n) {
+          if (principal <= 0 || n <= 0) return { mensual: 0, total: 0, intereses: 0 };
+          var i = tasaAnual / 12;
+          var m = principal * i / (1 - Math.pow(1 + i, -n));
+          return { mensual: m, total: m * n, intereses: m * n - principal };
+        }
+        function montoMaximo(mensualidadMax, tasaAnual, n) {
+          var i = tasaAnual / 12;
+          return mensualidadMax * (1 - Math.pow(1 + i, -n)) / i;
+        }
+
+        var ultimo = null;
+
+        function calcular() {
+          var pension = num(el.pension, 0);
+          var monto = num(el.monto, 0);
+          var n = plazo();
+          var limite = pension * 0.30;
+
+          var mul = amortiza(monto, TASAS.multiva.tasaAnual, n);
+          var dim = amortiza(monto, TASAS.dimex.tasaAnual, n);
+
+          el.rMens.textContent = fmt2.format(mul.mensual);
+          el.rDetalle.textContent = "al mes, durante " + n + " meses · opción Multiva";
+          el.rTotal.textContent = fmt.format(mul.total);
+          el.rInt.textContent = fmt.format(mul.intereses);
+          el.rLimite.textContent = fmt.format(limite) + " /mes";
+          el.rLibre.textContent = fmt.format(Math.max(pension - mul.mensual, 0)) + " /mes";
+
+          el.cMulMens.textContent = fmt2.format(mul.mensual);
+          el.cMulTotal.textContent = fmt.format(mul.total);
+          el.cMulInt.textContent = fmt.format(mul.intereses);
+          el.cDimMens.textContent = fmt2.format(dim.mensual);
+          el.cDimTotal.textContent = fmt.format(dim.total);
+          el.cDimInt.textContent = fmt.format(dim.intereses);
+
+          var ahorroMes = dim.mensual - mul.mensual;
+          var ahorroTotal = dim.total - mul.total;
+          if (monto > 0) {
+            el.diffNote.innerHTML = "Por el mismo crédito, con Multiva pagarías <strong>" + fmt.format(ahorroMes) + " menos al mes</strong> y <strong>" + fmt.format(ahorroTotal) + " menos en total</strong> que con DIMEX, según estas cifras de ejemplo.";
+            el.tagDimex.textContent = fmt.format(ahorroTotal) + " más en total";
+          } else {
+            el.diffNote.textContent = "Escribe un monto para ver la diferencia entre las dos opciones.";
+            el.tagDimex.textContent = "Otra opción";
+          }
+
+          /* Capacidad 30% */
+          el.vCap.className = "verdict show";
+          if (pension <= 0 || monto <= 0) {
+            el.vCap.classList.add("warn");
+            el.vCap.innerHTML = "<strong>Faltan datos</strong>Escribe tu pensión y el monto que quieres solicitar para revisar tu capacidad.";
+          } else if (mul.mensual <= limite) {
+            var maximo = montoMaximo(limite, TASAS.multiva.tasaAnual, n);
+            el.vCap.classList.add("ok");
+            el.vCap.innerHTML = "<strong>Sí cabe en tu límite del 30%</strong>Tu descuento máximo permitido es " + fmt.format(limite) + " al mes. Con tu pensión, a " + n + " meses podrías solicitar hasta " + fmt.format(maximo) + " aproximadamente sin pasar ese límite.";
+          } else {
+            var maximo2 = montoMaximo(limite, TASAS.multiva.tasaAnual, n);
+            el.vCap.classList.add("warn");
+            el.vCap.innerHTML = "<strong>Ese monto rebasa tu límite del 30%</strong>El IMSS solo permite descontarte hasta " + fmt.format(limite) + " al mes. A " + n + " meses, el monto que sí cabe es de aproximadamente " + fmt.format(maximo2) + ". Baja el monto o alarga el plazo y revisa de nuevo.";
+          }
+
+          /* Compra de deuda */
+          var tiene = tieneCredito();
+          el.subfields.hidden = !tiene;
+          el.vCompra.className = "verdict";
+          el.vCompra.innerHTML = "";
+          if (tiene) {
+            var pagos = Math.floor(num(el.pagos, 0));
+            var descActual = num(el.descuentoActual, 0);
+            el.vCompra.classList.add("show");
+            if (pagos > 24) {
+              var extra = "";
+              if (descActual > 0 && mul.mensual > 0) {
+                var dif = descActual - mul.mensual;
+                if (dif > 0) {
+                  extra = " Por el monto simulado, tu mensualidad bajaría unos " + fmt.format(dif) + " frente a los " + fmt.format(descActual) + " que te descuentan hoy con " + el.bancoActual.value + ".";
+                }
+              }
+              el.vCompra.classList.add("ok");
+              el.vCompra.innerHTML = "<strong>Tu caso se puede revisar para compra de deuda</strong>Llevas " + pagos + " pagos, más de los 24 que pide el IMSS. Otra financiera podría pagar tu crédito actual y dejarte una mensualidad menor, o la misma con efectivo a tu favor." + extra + " El monto exacto de efectivo, si aplica, sale de la verificación en el portal del IMSS — nunca antes.";
+            } else {
+              var faltan = 25 - pagos;
+              el.vCompra.classList.add("warn");
+              el.vCompra.innerHTML = "<strong>Todavía no califica para compra de deuda</strong>La regla del IMSS pide más de 24 descuentos pagados y llevas " + pagos + ". Te faltan " + faltan + (faltan === 1 ? " pago" : " pagos") + ". Mientras tanto, sí puedes revisar un crédito nuevo si tu límite del 30% lo permite.";
+            }
+          }
+
+          /* Sincroniza el formulario */
+          if (pension > 0) {
+            var rango = pension < 8000 ? "Menos de $8,000"
+              : pension < 12000 ? "$8,000 a $12,000"
+              : pension < 18000 ? "$12,000 a $18,000"
+              : pension < 25000 ? "$18,000 a $25,000"
+              : "Más de $25,000";
+            el.fRango.value = rango;
+          }
+          el.fDescuentos.value = tiene ? "Sí" : "No";
+
+          ultimo = { pension: pension, monto: monto, n: n, mul: mul, dim: dim, limite: limite, tiene: tiene };
+        }
+
+        ["input", "change"].forEach(function (evt) {
+          document.getElementById("simulador").addEventListener(evt, function (e) {
+            if (e.target.closest(".card")) calcular();
+          });
+        });
+        el.bancoActual.addEventListener("change", calcular);
+        el.pagos.addEventListener("input", calcular);
+        el.descuentoActual.addEventListener("input", calcular);
+
+        document.querySelectorAll(".chip").forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            el.monto.value = chip.getAttribute("data-monto");
+            document.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+            chip.setAttribute("aria-pressed", "true");
+            calcular();
+          });
+        });
+        el.monto.addEventListener("input", function () {
+          document.querySelectorAll(".chip").forEach(function (c) {
+            c.setAttribute("aria-pressed", String(parseFloat(c.getAttribute("data-monto")) === num(el.monto, -1)));
+          });
+        });
+
+        calcular();
+
+        /* ---------- Formulario -> WhatsApp ---------- */
+        var form = document.getElementById("lead-form");
+        var errorBox = document.getElementById("form-error");
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          errorBox.classList.remove("show");
+          var nombre = document.getElementById("f-nombre").value.trim();
+          var wa = document.getElementById("f-wa").value.replace(/\D/g, "");
+          if (wa.length === 12 && wa.indexOf("52") === 0) wa = wa.slice(2);
+          if (!nombre) {
+            errorBox.textContent = "Escribe tu nombre para poder dirigirnos a ti.";
+            errorBox.classList.add("show");
+            document.getElementById("f-nombre").focus();
+            return;
+          }
+          if (wa.length !== 10) {
+            errorBox.textContent = "Revisa tu WhatsApp: deben ser 10 dígitos, por ejemplo 55 1234 5678.";
+            errorBox.classList.add("show");
+            document.getElementById("f-wa").focus();
+            return;
+          }
+          var quiero = document.getElementById("f-quiero").value;
+          var ley73 = document.getElementById("f-ley73").value;
+          var rango = document.getElementById("f-rango").value;
+          var descuentos = document.getElementById("f-descuentos").value;
+          var municipio = document.getElementById("f-municipio").value.trim();
+
+          var lineas = [
+            "Hola Ismael, soy " + nombre + ". Vengo de tu página de créditos para pensionados Ley 73.",
+            "Lo que quiero: " + quiero + ".",
+            "Pensionado: " + ley73 + ".",
+            "Pensión mensual: " + rango + ".",
+            "¿Ya tengo descuentos de un crédito?: " + descuentos + "."
+          ];
+          if (municipio) lineas.push("Vivo en: " + municipio + ".");
+          if (ultimo && ultimo.monto > 0) {
+            lineas.push("");
+            lineas.push("Mi simulación en la página:");
+            lineas.push("- Monto: " + fmt.format(ultimo.monto) + " a " + ultimo.n + " meses");
+            lineas.push("- Multiva: " + fmt2.format(ultimo.mul.mensual) + "/mes · total " + fmt.format(ultimo.mul.total));
+            lineas.push("- DIMEX: " + fmt2.format(ultimo.dim.mensual) + "/mes · total " + fmt.format(ultimo.dim.total));
+            if (ultimo.tiene) {
+              var pagos = Math.floor(num(el.pagos, 0));
+              lineas.push("- Ya tengo crédito con " + el.bancoActual.value + ", llevo " + pagos + " pagos y me descuentan " + fmt.format(num(el.descuentoActual, 0)) + "/mes.");
+            }
+          }
+          var url = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(lineas.join("\n"));
+          window.open(url, "_blank", "noopener");
+        });
+      })();
+    </script>
+  </body>
+</html>
